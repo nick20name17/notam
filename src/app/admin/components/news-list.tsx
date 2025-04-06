@@ -6,13 +6,13 @@ import { ExternalLink } from 'lucide-react'
 import Image from 'next/image'
 import Link from 'next/link'
 
+import { EditNewsCard } from './edit-news-card'
+import { RemoveNews } from './remove-news'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardFooter } from '@/components/ui/card'
 import { Skeleton } from '@/components/ui/skeleton'
 import { SupabaseNews } from '@/types/news'
 import { createClient } from '@/utils/supabase/client'
-import { EditNewsCard } from './edit-news-card'
-import { RemoveNews } from './remove-news'
 
 const supabase = createClient()
 
@@ -49,12 +49,12 @@ export const NewsList = () => {
   } = useQuery({
     queryKey: ['news'],
     queryFn: fetchNews,
-    staleTime: 1000 * 60 * 5 // 5 minutes
+    staleTime: 1000 * 60 * 5
   })
 
   if (isLoading) {
     return (
-      <div className='grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3'>
+      <div className='grid gap-5 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4'>
         {Array.from({ length: 3 }).map((_, i) => (
           <Skeleton
             key={i}
@@ -129,10 +129,8 @@ const SupabaseNewsCard = ({ news }: { news: SupabaseNews }) => {
         )}
       </CardContent>
       <CardFooter className='flex w-full items-center justify-between border-t'>
-        <div className='flex items-center gap-4'>
-          <EditNewsCard newsItem={news} />
-          <RemoveNews newsItem={news} />
-        </div>
+        <EditNewsCard newsItem={news} />
+        <RemoveNews newsItem={news} />
         <Button
           variant='ghost'
           size='sm'

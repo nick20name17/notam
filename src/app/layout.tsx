@@ -1,15 +1,9 @@
 import type { Metadata } from 'next'
-import { Geist } from 'next/font/google'
 import { PropsWithChildren } from 'react'
 
 import './globals.css'
 import { Header } from '@/components/header'
 import { TanstackQueryProvider } from '@/providers/tanstack-query-provider'
-
-const geistSans = Geist({
-  variable: '--font-geist-sans',
-  subsets: ['latin']
-})
 
 export const metadata: Metadata = {
   title: 'Notam',
@@ -24,7 +18,7 @@ export const metadata: Metadata = {
 const RootLayout = ({ children }: PropsWithChildren) => {
   return (
     <html lang='en'>
-      <body className={`${geistSans.className} antialiased`}>
+      <body className='antialiased'>
         <Header />
         <main className='pb-20'>
           <TanstackQueryProvider>{children}</TanstackQueryProvider>

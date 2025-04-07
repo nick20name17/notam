@@ -1,18 +1,18 @@
 'use client'
 
-import { useQuery, useQueryClient } from '@tanstack/react-query'
+import { useQuery } from '@tanstack/react-query'
 import { formatDistanceToNow } from 'date-fns'
 import { ExternalLink } from 'lucide-react'
 import Image from 'next/image'
 import Link from 'next/link'
 
-import { EditNewsCard } from './edit-news-card'
-import { RemoveNews } from './remove-news'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardFooter } from '@/components/ui/card'
 import { Skeleton } from '@/components/ui/skeleton'
 import { SupabaseNews } from '@/types/news'
 import { createClient } from '@/utils/supabase/client'
+import { EditNewsCard } from './edit-news-card'
+import { RemoveNews } from './remove-news'
 
 const supabase = createClient()
 
@@ -29,20 +29,9 @@ const fetchNews = async () => {
   return data as SupabaseNews[]
 }
 
-const deleteNews = async (id: string) => {
-  const { error } = await supabase.from('news').delete().eq('id', id)
-
-  if (error) {
-    throw error
-  }
-
-  return id
-}
 
 export const NewsList = () => {
-  const queryClient = useQueryClient()
-
-  const {
+const {
     data: news,
     isLoading,
     error

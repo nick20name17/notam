@@ -16,16 +16,25 @@ import {
   DialogTrigger
 } from '@/components/ui/dialog'
 import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
-import { SupabaseNews } from '@/types/news'
 import { createClient } from '@/utils/supabase/client'
+import { zodResolver } from '@hookform/resolvers/zod'
+import { useForm } from 'react-hook-form'
+import { z } from 'zod'
 
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage
+} from "@/components/ui/form"
 const supabase = createClient()
 
-const updateNewsTitle = async ({ id, title }: { id: string; title: string }) => {
+const updateNewsTitle = async ({ id, title, description , imageurl }: { id: string; title: string, description: string, imageurl: string }) => {
   const { data, error } = await supabase
     .from('news')
-    .update({ title })
+    .update({ title, description, imageurl })
     .eq('id', id)
     .select()
     .single()
@@ -41,90 +50,203 @@ interface EditNewsCardProps {
   newsItem: SupabaseNews
 }
 
-export const EditNewsCard = ({ newsItem }: EditNewsCardProps) => {
-  const [open, setOpen] = useState(false)
-  const [title, setTitle] = useState(newsItem.title)
+
+
+
+
+// Define the SupabaseNews type based on required fields
+type SupabaseNews = {
+  id: string
+  title: string
+  description?: string
+  imageurl?: string
+}
+
+const editNewsCardSchema = z.object({
+  title: z.string().min(1, 'Title is required'),
+  description: z.string().min(1, 'Description is required').optional(),
+  imageurl: z.string().url('Please enter a valid URL').optional().or(z.literal(''))
+})
+
+type FormValues = z.infer<typeof editNewsCardSchema>
+
+interface EditNewsCardProps {
+  newsItem: SupabaseNews
+  open?: boolean
+  setOpen?: (open: boolean) => void
+  hideButton?: boolean
+}
+
+export const EditNewsCard = ({
+  newsItem,
+  open: externalOpen,
+  setOpen: externalSetOpen,
+  hideButton = false
+}: EditNewsCardProps) => {
+  const [internalOpen, setInternalOpen] = useState(false)
+
+  const open = externalOpen !== undefined ? externalOpen : internalOpen
+  const setOpen = externalSetOpen || setInternalOpen
+
   const queryClient = useQueryClient()
+
+  const form = useForm<FormValues>({
+    resolver: zodResolver(editNewsCardSchema),
+    defaultValues: {
+      title: newsItem.title,
+      description: newsItem.description || '',
+      imageurl: newsItem.imageurl || ''
+    }
+  })
 
   const updateMutation = useMutation({
     mutationFn: updateNewsTitle,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['news'] })
-      toast.success('News title updated successfully!')
+      toast.success('News item updated successfully!')
       setOpen(false)
+      form.reset()
     },
     onError: (error: any) => {
       toast.error(error.message ? error.message : 'Something went wrong, try again')
     }
   })
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
-    updateMutation.mutate({ id: newsItem.id, title })
+  const onSubmit = (values: FormValues) => {
+    updateMutation.mutate({
+      id: newsItem.id,
+      title: values.title,
+      description: values.description ?? '',
+      imageurl: values.imageurl ?? ''
+    })
   }
 
   return (
     <Dialog
       open={open}
-      onOpenChange={setOpen}
+      onOpenChange={(newOpen) => {
+        setOpen(newOpen)
+        if (!newOpen) {
+          form.reset({
+            title: newsItem.title,
+            description: newsItem.description || '',
+            imageurl: newsItem.imageurl || ''
+          })
+        }
+      }}
     >
-      <DialogTrigger asChild>
-        <Button
-          variant='outline'
-          size='sm'
-        >
-          <Pencil />
-          <span>Edit</span>
-        </Button>
-      </DialogTrigger>
+      {!hideButton && (
+        <DialogTrigger asChild>
+          <Button
+            variant='outline'
+            size='sm'
+          >
+            <Pencil className="mr-2 size-4" />
+            <span>Edit</span>
+          </Button>
+        </DialogTrigger>
+      )}
+
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Edit News Title</DialogTitle>
+          <DialogTitle>Edit News Item</DialogTitle>
           <DialogDescription>
-            Update the title of this news article.
+            Update the details of this news article.
           </DialogDescription>
         </DialogHeader>
 
-        <form
-          onSubmit={handleSubmit}
-          className='space-y-4'
-        >
-          <div className='space-y-2'>
-            <Label htmlFor='title'>Title</Label>
-            <Input
-              id='title'
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
-              placeholder='Enter news title'
-              disabled={updateMutation.isPending}
-            />
-          </div>
-
-          <DialogFooter>
-            <Button
-              type='button'
-              variant='outline'
-              onClick={() => setOpen(false)}
-              disabled={updateMutation.isPending}
-            >
-              Cancel
-            </Button>
-            <Button
-              className='w-28'
-              type='submit'
-              disabled={
-                updateMutation.isPending || title === newsItem.title || !title.trim()
-              }
-            >
-              {updateMutation.isPending ? (
-                <Loader2 className='animate-spin' />
-              ) : (
-                'Save Changes'
+        <Form {...form}>
+          <form
+            onSubmit={form.handleSubmit(onSubmit)}
+            className='space-y-4'
+          >
+            <FormField
+              control={form.control}
+              name="title"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Title</FormLabel>
+                  <FormControl>
+                    <Input
+                      placeholder="Enter news title"
+                      disabled={updateMutation.isPending}
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
               )}
-            </Button>
-          </DialogFooter>
-        </form>
+            />
+
+            {(newsItem.description !== undefined) && (
+              <FormField
+                control={form.control}
+                name="description"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Description</FormLabel>
+                    <FormControl>
+                      <Input
+                        placeholder="Enter news description"
+                        disabled={updateMutation.isPending}
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            )}
+
+            {(newsItem.imageurl !== undefined) && (
+              <FormField
+                control={form.control}
+                name="imageurl"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Image URL</FormLabel>
+                    <FormControl>
+                      <Input
+                        placeholder="Enter image URL (optional)"
+                        disabled={updateMutation.isPending}
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            )}
+
+            <DialogFooter>
+              <Button
+                type='button'
+                variant='outline'
+                onClick={() => setOpen(false)}
+                disabled={updateMutation.isPending}
+              >
+                Cancel
+              </Button>
+              <Button
+                className='w-28'
+                type='submit'
+                disabled={
+                  updateMutation.isPending ||
+                  !form.formState.isValid
+                }
+              >
+                {updateMutation.isPending ? (
+                  <Loader2 className='size-4 animate-spin' />
+                ) : (
+                  'Save Changes'
+                )}
+              </Button>
+            </DialogFooter>
+          </form>
+        </Form>
       </DialogContent>
     </Dialog>
   )
 }
+
+

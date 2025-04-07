@@ -5,11 +5,13 @@ import {
   SortingState,
   flexRender,
   getCoreRowModel,
+  getFilteredRowModel,
   getSortedRowModel,
   useReactTable
 } from '@tanstack/react-table'
 import { useState } from 'react'
 
+import { SearchBar } from '@/components/search-bar'
 import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area'
 import {
   Table,
@@ -27,6 +29,9 @@ interface AirTableProps {
 }
 
 export function AirTable({ columns, data }: AirTableProps) {
+  const [search, setSearch] = useState('')
+
+
   const [sorting, setSorting] = useState<SortingState>([
     {
       id: 'firstScrapeDate',
@@ -39,22 +44,29 @@ export function AirTable({ columns, data }: AirTableProps) {
     columns,
     sortDescFirst: true,
     state: {
-      sorting
+      sorting,
+      globalFilter: search
     },
+     getFilteredRowModel: getFilteredRowModel(),
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
-    onSortingChange: setSorting
+    onSortingChange: setSorting,
+    onGlobalFilterChange: setSearch
   })
+
 
   return (
     <section
       className='container mt-10'
       id='table'
     >
-      <h1 className='pb-5 text-3xl leading-none font-semibold tracking-tight transition-colors'>
-        Table{' '}
-        <span className='text-muted-foreground text-base'>({data.length})</span>
-      </h1>
+      <div className='flex items-center justify-between gap-5 pb-5'>
+        <h1 className="text-3xl leading-none font-semibold tracking-tight transition-colors">
+          Table{' '}
+          <span className="text-muted-foreground text-base">({table.getFilteredRowModel().rows.length} of {data.length})</span>
+        </h1>
+      <SearchBar className='w-100' search={search} setSearch={setSearch} />
+      </div>
       <ScrollArea className='h-150 rounded-md border'>
         <Table>
           <TableHeader className='bg-muted sticky top-0 z-10 shadow-[inset_0_-1px_0_0_var(--border)]'>

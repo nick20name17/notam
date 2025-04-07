@@ -19,20 +19,15 @@ import {
   TableHeader,
   TableRow
 } from '@/components/ui/table'
-import { AirInfo } from '@/types/table'
+import { AirportInfo } from '@/types/table'
 
 interface AirTableProps {
-  columns: ColumnDef<AirInfo, AirInfo>[]
-  data: AirInfo[]
+  columns: ColumnDef<AirportInfo, AirportInfo>[]
+  data: AirportInfo[]
 }
 
-export function AirTable({ columns, data }: AirTableProps) {
-  const [sorting, setSorting] = useState<SortingState>([
-    {
-      id: 'firstScrapeDate',
-      desc: true
-    }
-  ])
+export function AirPortTable({ columns, data }: AirTableProps) {
+  const [sorting, setSorting] = useState<SortingState>([])
 
   const table = useReactTable({
     data,
@@ -47,15 +42,12 @@ export function AirTable({ columns, data }: AirTableProps) {
   })
 
   return (
-    <section
-      className='container mt-10'
-      id='table'
-    >
-      <h1 className='pb-5 text-3xl leading-none font-semibold tracking-tight transition-colors'>
-        Table{' '}
+    <section className='container mt-10'>
+      <h2 className='pb-5 text-3xl leading-none font-semibold tracking-tight transition-colors'>
+        Reports for each airport{' '}
         <span className='text-muted-foreground text-base'>({data.length})</span>
-      </h1>
-      <ScrollArea className='h-150 rounded-md border'>
+      </h2>
+      <ScrollArea className='h-90 rounded-md border'>
         <Table>
           <TableHeader className='bg-muted sticky top-0 z-10 shadow-[inset_0_-1px_0_0_var(--border)]'>
             {table.getHeaderGroups().map((headerGroup) => (

@@ -9,3 +9,9 @@ export interface AirInfo {
   endDate: string
   condition: string
 }
+
+export interface AirportInfo {
+  id: string
+  location: string
+  count: number
+}

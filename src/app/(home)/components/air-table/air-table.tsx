@@ -11,6 +11,7 @@ import {
 } from '@tanstack/react-table'
 import { useState } from 'react'
 
+import { TablePagination } from './table-pagination'
 import { SearchBar } from '@/components/search-bar'
 import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area'
 import {
@@ -26,11 +27,19 @@ import { AirInfo } from '@/types/table'
 interface AirTableProps {
   columns: ColumnDef<AirInfo, AirInfo>[]
   data: AirInfo[]
+  page: number
+  totalCount: number
+  totalPages: number
 }
 
-export function AirTable({ columns, data }: AirTableProps) {
+export function AirTable({
+  columns,
+  data,
+  page,
+  totalCount,
+  totalPages
+}: AirTableProps) {
   const [search, setSearch] = useState('')
-
 
   const [sorting, setSorting] = useState<SortingState>([
     {
@@ -47,13 +56,12 @@ export function AirTable({ columns, data }: AirTableProps) {
       sorting,
       globalFilter: search
     },
-     getFilteredRowModel: getFilteredRowModel(),
+    getFilteredRowModel: getFilteredRowModel(),
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
     onSortingChange: setSorting,
     onGlobalFilterChange: setSearch
   })
-
 
   return (
     <section
@@ -61,11 +69,18 @@ export function AirTable({ columns, data }: AirTableProps) {
       id='table'
     >
       <div className='flex items-center justify-between gap-5 pb-5'>
-        <h1 className="text-3xl leading-none font-semibold tracking-tight transition-colors">
+        <h1 className='text-3xl leading-none font-semibold tracking-tight transition-colors'>
           Table{' '}
-          <span className="text-muted-foreground text-base">({table.getFilteredRowModel().rows.length} of {data.length})</span>
+          <span className='text-muted-foreground text-base'>
+            (total: {totalCount} / on current page:{' '}
+            {table.getFilteredRowModel().rows.length})
+          </span>
         </h1>
-      <SearchBar className='w-100' search={search} setSearch={setSearch} />
+        <SearchBar
+          className='w-100'
+          search={search}
+          setSearch={setSearch}
+        />
       </div>
       <ScrollArea className='h-150 rounded-md border'>
         <Table>
@@ -127,6 +142,10 @@ export function AirTable({ columns, data }: AirTableProps) {
         </Table>
         <ScrollBar orientation='horizontal' />
       </ScrollArea>
+      <TablePagination
+        currentPage={page}
+        totalPages={totalPages}
+      />
     </section>
   )
 }

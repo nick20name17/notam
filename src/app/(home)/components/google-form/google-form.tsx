@@ -13,7 +13,7 @@ export const GoogleForm = () => {
       </h2>
       <Link
         className='mt-3 block'
-        href='https://docs.google.com/forms/d/e/1FAIpQLSduL8Q-9lqPZABGqkyguIpw8zsd2_aijjP7e4kcCactxvE4bw/viewform?usp=sharing'
+        href='https://docs.google.com/forms/d/e/1FAIpQLSdDHNLpCmB-Q5kkR81fxAtBlH76gw_kur5xDNt0IvZqEB2z9Q/viewform'
         target='_blank'
       >
         <Button>Leave a complaint</Button>

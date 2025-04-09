@@ -1,6 +1,6 @@
+import { NewsCard } from './news-card'
 import { SupabaseNews } from '@/types/news'
 import { createClient } from '@/utils/supabase/server'
-import { NewsCard } from './news-card'
 
 const fetchNews = async () => {
   const supabase = await createClient()
@@ -29,7 +29,7 @@ export const News = async () => {
         News
       </h2>
 
-      <div className='grid grid-cols-1 gap-5 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 mt-5'>
+      <div className='mt-5 grid grid-cols-1 gap-5 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4'>
         {data.length > 0
           ? data.map((news) => (
               <NewsCard

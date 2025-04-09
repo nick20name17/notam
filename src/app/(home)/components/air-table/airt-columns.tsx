@@ -2,8 +2,8 @@
 
 import { ColumnDef } from '@tanstack/react-table'
 
-import { AirInfo } from '@/types/table'
 import { DataTableColumnHeader } from './data-table-column-header'
+import { AirInfo } from '@/types/table'
 
 const formatDateTime = (s: string) =>
   s.replace(/^(\d{2}\/\d{2}\/\d{4}) (\d{2})(\d{2})([A-Z]*)?$/, '$1 $2:$3')
@@ -58,7 +58,7 @@ export const airColumns: ColumnDef<AirInfo>[] = [
       />
     ),
     size: 120,
-    enableSorting: false,
+    enableSorting: false
   },
   {
     accessorKey: 'startDate',

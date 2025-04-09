@@ -45,7 +45,9 @@ export function AirPortTable({ columns, data }: AirTableProps) {
     <section className='container mt-10'>
       <h2 className='pb-5 text-3xl leading-none font-semibold tracking-tight transition-colors'>
         Reports for each airport{' '}
-        <span className='text-muted-foreground text-base'>({data.length})</span>
+        <span className='text-muted-foreground text-base'>
+          (per current page: {data.length})
+        </span>
       </h2>
       <ScrollArea className='h-90 rounded-md border'>
         <Table>

@@ -8,6 +8,7 @@ import { useForm } from 'react-hook-form'
 import { toast } from 'sonner'
 import { z } from 'zod'
 
+import { EditNewsCard } from './edit-news-card'
 import { Button } from '@/components/ui/button'
 import {
   Form,
@@ -20,7 +21,6 @@ import {
 import { Input } from '@/components/ui/input'
 import { News, SupabaseNews } from '@/types/news'
 import { createClient } from '@/utils/supabase/client'
-import { EditNewsCard } from './edit-news-card'
 
 const newsSchema = z.object({
   url: z.string().url().min(1, 'News link is required')

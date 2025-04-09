@@ -8,7 +8,6 @@ interface SearchBarProps extends React.ComponentProps<'input'> {
 }
 
 export const SearchBar = ({ setSearch, search, ...props }: SearchBarProps) => {
-
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
     const searchTerm = e.target.value
     setSearch?.(searchTerm?.trim() ?? '')

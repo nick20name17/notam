@@ -1,9 +1,12 @@
 'use client'
 
+import { zodResolver } from '@hookform/resolvers/zod'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { Loader2, Pencil } from 'lucide-react'
 import { useState } from 'react'
+import { useForm } from 'react-hook-form'
 import { toast } from 'sonner'
+import { z } from 'zod'
 
 import { Button } from '@/components/ui/button'
 import {
@@ -15,12 +18,6 @@ import {
   DialogTitle,
   DialogTrigger
 } from '@/components/ui/dialog'
-import { Input } from '@/components/ui/input'
-import { createClient } from '@/utils/supabase/client'
-import { zodResolver } from '@hookform/resolvers/zod'
-import { useForm } from 'react-hook-form'
-import { z } from 'zod'
-
 import {
   Form,
   FormControl,
@@ -28,10 +25,23 @@ import {
   FormItem,
   FormLabel,
   FormMessage
-} from "@/components/ui/form"
+} from '@/components/ui/form'
+import { Input } from '@/components/ui/input'
+import { createClient } from '@/utils/supabase/client'
+
 const supabase = createClient()
 
-const updateNewsTitle = async ({ id, title, description , imageurl }: { id: string; title: string, description: string, imageurl: string }) => {
+const updateNewsTitle = async ({
+  id,
+  title,
+  description,
+  imageurl
+}: {
+  id: string
+  title: string
+  description: string
+  imageurl: string
+}) => {
   const { data, error } = await supabase
     .from('news')
     .update({ title, description, imageurl })
@@ -49,10 +59,6 @@ const updateNewsTitle = async ({ id, title, description , imageurl }: { id: stri
 interface EditNewsCardProps {
   newsItem: SupabaseNews
 }
-
-
-
-
 
 // Define the SupabaseNews type based on required fields
 type SupabaseNews = {
@@ -141,7 +147,7 @@ export const EditNewsCard = ({
             variant='outline'
             size='sm'
           >
-            <Pencil className="mr-2 size-4" />
+            <Pencil className='mr-2 size-4' />
             <span>Edit</span>
           </Button>
         </DialogTrigger>
@@ -162,13 +168,13 @@ export const EditNewsCard = ({
           >
             <FormField
               control={form.control}
-              name="title"
+              name='title'
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Title</FormLabel>
                   <FormControl>
                     <Input
-                      placeholder="Enter news title"
+                      placeholder='Enter news title'
                       disabled={updateMutation.isPending}
                       {...field}
                     />
@@ -178,16 +184,16 @@ export const EditNewsCard = ({
               )}
             />
 
-            {(newsItem.description !== undefined) && (
+            {newsItem.description !== undefined && (
               <FormField
                 control={form.control}
-                name="description"
+                name='description'
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Description</FormLabel>
                     <FormControl>
                       <Input
-                        placeholder="Enter news description"
+                        placeholder='Enter news description'
                         disabled={updateMutation.isPending}
                         {...field}
                       />
@@ -198,16 +204,16 @@ export const EditNewsCard = ({
               />
             )}
 
-            {(newsItem.imageurl !== undefined) && (
+            {newsItem.imageurl !== undefined && (
               <FormField
                 control={form.control}
-                name="imageurl"
+                name='imageurl'
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Image URL</FormLabel>
                     <FormControl>
                       <Input
-                        placeholder="Enter image URL (optional)"
+                        placeholder='Enter image URL (optional)'
                         disabled={updateMutation.isPending}
                         {...field}
                       />
@@ -230,10 +236,7 @@ export const EditNewsCard = ({
               <Button
                 className='w-28'
                 type='submit'
-                disabled={
-                  updateMutation.isPending ||
-                  !form.formState.isValid
-                }
+                disabled={updateMutation.isPending || !form.formState.isValid}
               >
                 {updateMutation.isPending ? (
                   <Loader2 className='size-4 animate-spin' />
@@ -248,5 +251,3 @@ export const EditNewsCard = ({
     </Dialog>
   )
 }
-
-

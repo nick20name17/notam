@@ -1,11 +1,11 @@
-import { AirInfo, AirportInfo } from '@/types/table'
-import { getSheetData } from '@/utils/google/sheet'
 import { AirTable } from './components/air-table/air-table'
 import { airColumns } from './components/air-table/airt-columns'
 import { airPortColumns } from './components/airport-table/airport-columns'
 import { AirPortTable } from './components/airport-table/airport-table'
 import { GoogleForm } from './components/google-form/google-form'
 import { News } from './components/news/news'
+import { AirInfo, AirportInfo } from '@/types/table'
+import { getSheetData } from '@/utils/google/sheet'
 
 function getLocationCounts(data: AirInfo[]): AirportInfo[] {
   const locationCounts: Record<string, number> = {}
@@ -34,16 +34,30 @@ function getLocationCounts(data: AirInfo[]): AirportInfo[] {
 
   return result
 }
+interface HomePageProps {
+  searchParams?: Promise<{ page?: string; limit?: string }>
+}
 
-const HomePage = async () => {
-  const data = await getSheetData()
+const HomePage = async (props: HomePageProps) => {
+  const searchParams = await props.searchParams
 
-  const groupedByLocation = getLocationCounts(data)
+  const page = Number(searchParams?.page || '1')
+  const limit = Number(searchParams?.limit || '100')
+  const offset = (page - 1) * limit
+
+  const data = await getSheetData(offset, limit)
+
+  const groupedByLocation = getLocationCounts(data.data)
+
+  const totalPages = Math.ceil(data.total / limit)
 
   return (
     <>
       <AirTable
-        data={data}
+        totalPages={totalPages}
+        totalCount={data.total}
+        page={page}
+        data={data.data}
         columns={airColumns}
       />
       <AirPortTable

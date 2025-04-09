@@ -22,7 +22,7 @@ const normalizeRow = (array: string[]) => {
   } as AirInfo
 }
 
-export const getSheetData = async () => {
+export const getSheetData = async (offset = 0, limit = 100) => {
   const auth = new google.auth.GoogleAuth({
     credentials: {
       private_key: process.env.GOOGLE_SHEETS_PRIVATE_KEY?.replace(/\\n/g, '\n'),
@@ -32,23 +32,37 @@ export const getSheetData = async () => {
   })
 
   const sheets = google.sheets({ version: 'v4', auth })
-  const range = `${SHEET_NAME}!A1:Z`
 
   try {
-    const response = await sheets.spreadsheets.values.get({
+    const countRes = await sheets.spreadsheets.values.get({
+      spreadsheetId: process.env.GOOGLE_SHEETS_SHEET_ID,
+      range: `${SHEET_NAME}!A:A`
+    })
+
+    const allRows = countRes.data.values || []
+    const realRowCount = allRows.length - 1 // minus header row
+
+    const startRow = offset + 2
+    const endRow = startRow + limit - 1
+    const range = `${SHEET_NAME}!A${startRow}:Z${endRow}`
+
+    const valuesRes = await sheets.spreadsheets.values.get({
       spreadsheetId: process.env.GOOGLE_SHEETS_SHEET_ID,
       range
     })
 
-    const values = response.data.values
+    const values = valuesRes.data.values || []
 
-    if (!values) {
-      throw new Error('No values found')
+    return {
+      data: values.map(normalizeRow),
+      total: realRowCount
     }
-
-    return values.slice(1).map(normalizeRow)
   } catch (error) {
     console.error('Error fetching sheet data:', error)
-    return []
+    return {
+      data: [],
+      total: 0
+    }
   }
 }
+

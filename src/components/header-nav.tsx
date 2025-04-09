@@ -1,13 +1,14 @@
 'use client'
 
 import Link from 'next/link'
+
 import { Button } from './ui/button'
 
-  const navItems = [
-    { href: '/#table', label: 'Table' },
-    { href: '/#form', label: 'Form' },
-    { href: '/#news', label: 'News' }
-  ]
+const navItems = [
+  { href: '/#table', label: 'Table' },
+  { href: '/#form', label: 'Form' },
+  { href: '/#news', label: 'News' }
+]
 
 export const HeaderNav = () => {
   return (

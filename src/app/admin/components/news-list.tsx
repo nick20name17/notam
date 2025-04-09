@@ -6,13 +6,13 @@ import { ExternalLink } from 'lucide-react'
 import Image from 'next/image'
 import Link from 'next/link'
 
+import { EditNewsCard } from './edit-news-card'
+import { RemoveNews } from './remove-news'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardFooter } from '@/components/ui/card'
 import { Skeleton } from '@/components/ui/skeleton'
 import { SupabaseNews } from '@/types/news'
 import { createClient } from '@/utils/supabase/client'
-import { EditNewsCard } from './edit-news-card'
-import { RemoveNews } from './remove-news'
 
 const supabase = createClient()
 
@@ -29,9 +29,8 @@ const fetchNews = async () => {
   return data as SupabaseNews[]
 }
 
-
 export const NewsList = () => {
-const {
+  const {
     data: news,
     isLoading,
     error

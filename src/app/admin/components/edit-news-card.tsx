@@ -3,6 +3,7 @@
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { Loader2, Pencil } from 'lucide-react'
+import Link from 'next/link'
 import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { toast } from 'sonner'
@@ -27,6 +28,7 @@ import {
   FormMessage
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
+import { SupabaseNews } from '@/types/news'
 import { createClient } from '@/utils/supabase/client'
 
 const supabase = createClient()
@@ -58,14 +60,6 @@ const updateNewsTitle = async ({
 
 interface EditNewsCardProps {
   newsItem: SupabaseNews
-}
-
-// Define the SupabaseNews type based on required fields
-type SupabaseNews = {
-  id: string
-  title: string
-  description?: string
-  imageurl?: string
 }
 
 const editNewsCardSchema = z.object({
@@ -147,7 +141,7 @@ export const EditNewsCard = ({
             variant='outline'
             size='sm'
           >
-            <Pencil className='mr-2 size-4' />
+            <Pencil />
             <span>Edit</span>
           </Button>
         </DialogTrigger>
@@ -224,26 +218,44 @@ export const EditNewsCard = ({
               />
             )}
 
-            <DialogFooter>
-              <Button
-                type='button'
-                variant='outline'
-                onClick={() => setOpen(false)}
-                disabled={updateMutation.isPending}
+            <DialogFooter className='flex-col sm:justify-between'>
+              <Link
+                className='block max-sm:w-full'
+                href={`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(newsItem.url)}`}
+                target='_blank'
+                rel='noopener noreferrer'
               >
-                Cancel
-              </Button>
-              <Button
-                className='w-28'
-                type='submit'
-                disabled={updateMutation.isPending || !form.formState.isValid}
-              >
-                {updateMutation.isPending ? (
-                  <Loader2 className='size-4 animate-spin' />
-                ) : (
-                  'Save Changes'
-                )}
-              </Button>
+                <Button
+                  className='max-sm:w-full'
+                  type='button'
+                  variant='outline'
+                  disabled={updateMutation.isPending}
+                >
+                  Share on Facebook
+                </Button>
+              </Link>
+              <div className='flex items-center gap-2'>
+                <Button
+                  className='max-sm:flex-1'
+                  type='button'
+                  variant='outline'
+                  onClick={() => setOpen(false)}
+                  disabled={updateMutation.isPending}
+                >
+                  Cancel
+                </Button>
+                <Button
+                  className='w-28 max-sm:flex-1'
+                  type='submit'
+                  disabled={updateMutation.isPending || !form.formState.isValid}
+                >
+                  {updateMutation.isPending ? (
+                    <Loader2 className='size-4 animate-spin' />
+                  ) : (
+                    'Save Changes'
+                  )}
+                </Button>
+              </div>
             </DialogFooter>
           </form>
         </Form>

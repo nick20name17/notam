@@ -136,7 +136,7 @@ export const AddNewsForm = () => {
       <Form {...form}>
         <form
           onSubmit={form.handleSubmit(onNewsAdd)}
-          className='flex w-full items-end gap-2'
+          className='mb-4 flex w-full items-end gap-2'
         >
           <FormField
             control={form.control}

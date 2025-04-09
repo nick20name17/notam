@@ -13,10 +13,12 @@ const AdminPage = async () => {
   }
 
   return (
-    <section className='container mt-10 flex flex-col gap-4'>
-      <AddNewsForm />
-      <NewsList />
-    </section>
+    <>
+      <section className='container mt-10 flex flex-col gap-4'>
+        <AddNewsForm />
+        <NewsList />
+      </section>
+    </>
   )
 }
 
